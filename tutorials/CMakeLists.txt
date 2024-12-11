@@ -115,6 +115,7 @@ ADD_SUBDIRECTORY(ray_mask)
 ADD_SUBDIRECTORY(forest)
 
 ADD_SUBDIRECTORY(embree_tests)
+ADD_SUBDIRECTORY(custom_test)
 
 
 ENDIF()

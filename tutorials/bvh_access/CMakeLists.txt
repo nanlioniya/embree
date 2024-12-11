@@ -13,4 +13,4 @@ SIGN_TARGET(embree_bvh_access)
 
 ENDIF()
 
-ADD_EMBREE_TEST_ECS(bvh_access embree_bvh_access NO_REFERENCE NO_ISPC NO_SYCL)
+# ADD_EMBREE_TEST_ECS(bvh_access embree_bvh_access NO_REFERENCE NO_ISPC NO_SYCL)

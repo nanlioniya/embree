@@ -1,0 +1,5 @@
+INCLUDE(tutorial)
+ADD_EXECUTABLE(embree_custom_test custom_test.cpp)
+TARGET_LINK_LIBRARIES(embree_custom_test tutorial)
+SET_PROPERTY(TARGET embree_custom_test PROPERTY FOLDER tutorials)
+INSTALL(TARGETS embree_custom_test DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT examples)
