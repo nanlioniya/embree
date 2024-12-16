@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.isph": "cpp",
+        "iostream": "cpp"
+    }
+}

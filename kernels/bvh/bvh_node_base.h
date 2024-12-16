@@ -39,5 +39,6 @@ namespace embree
     }
     
     NodeRef children[N];    //!< Pointer to the N children (can be a node or leaf)
+    // int num = 0;
   };
 }
