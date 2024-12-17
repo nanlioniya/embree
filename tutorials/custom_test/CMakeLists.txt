@@ -1,5 +1,5 @@
 INCLUDE(tutorial)
-ADD_EXECUTABLE(embree_custom_test any_point_traversal.cpp)
+ADD_EXECUTABLE(embree_custom_test embree_example.cpp)
 TARGET_LINK_LIBRARIES(embree_custom_test embree math sys tasking tutorial)
 SET_PROPERTY(TARGET embree_custom_test PROPERTY FOLDER tutorials)
 INSTALL(TARGETS embree_custom_test DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT examples)

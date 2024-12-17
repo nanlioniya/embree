@@ -34,7 +34,7 @@ namespace embree
                                                                               RayQueryContext* __restrict__ context)
     {
       const BVH* __restrict__ bvh = (const BVH*)This->ptr;
-      
+      std::cout << "entered! root ptr: " << context->startNodePtr << "\n";
       /* we may traverse an empty BVH in case all geometry was invalid */
       if (bvh->root == BVH::emptyNode)
         return;
@@ -67,6 +67,8 @@ namespace embree
       /* initialize the node traverser */
       BVHNNodeTraverser1Hit<N, types> nodeTraverser;
 
+
+      int level = 0;
       /* pop loop */
       while (true) pop:
       {
@@ -74,7 +76,17 @@ namespace embree
         if (unlikely(stackPtr == stack)) break;
         stackPtr--;
         NodeRef cur = NodeRef(stackPtr->ptr);
+        
+        
+        level--;
+        std::cout << "\nPOP Node [Level " << level << "] ";
+        std::cout << "Ptr: " << cur.ptr << " ";
+        if (cur.isAABBNode())
+            std::cout << "Type: AABB Node";
+        else if (cur.isLeaf())
+            std::cout << "Type: Leaf Node";
 
+        
         /* if popped node is too far, pop next one */
         if (unlikely(*(float*)&stackPtr->dist > ray.tfar))
           continue;
@@ -85,7 +97,7 @@ namespace embree
           /* intersect node */
           size_t mask; vfloat<N> tNear;
           STAT3(normal.trav_nodes,1,1,1);
-          bool nodeIntersected = BVHNNodeIntersector1<N, types, robust>::intersect(cur, tray, ray.time(), tNear, mask);
+          bool nodeIntersected = BVHNNodeIntersector1<N, types, robust>::intersect(cur, tray, ray.time(), tNear, mask);          
           if (unlikely(!nodeIntersected)) { STAT3(normal.trav_nodes,-1,-1,-1); break; }
 
           /* if no child is hit, pop next node */

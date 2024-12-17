@@ -32,6 +32,10 @@ struct RTCIntersectArguments
   struct RTCRayQueryContext* context;     // optional pointer to ray query context
   RTCFilterFunctionN filter;               // filter function to execute
   RTCIntersectFunctionN intersect;         // user geometry intersection callback to execute
+  
+  // modified interface for specific access
+  int num;
+  size_t startNodePtr;
 #if RTC_MIN_WIDTH
   float minWidthDistanceFactor;            // curve radius is set to this factor times distance to ray origin
 #endif
@@ -45,7 +49,22 @@ RTC_FORCEINLINE void rtcInitIntersectArguments(struct RTCIntersectArguments* arg
   args->context = NULL;
   args->filter = NULL;
   args->intersect = NULL;
+  args->startNodePtr = 0;
+  args->num = -1;
+#if RTC_MIN_WIDTH
+  args->minWidthDistanceFactor = 0.0f;
+#endif
+}
 
+RTC_FORCEINLINE void rtcInitIntersectArgumentsWithID(struct RTCIntersectArguments* args, int i, size_t ptr)
+{
+  args->flags = RTC_RAY_QUERY_FLAG_INCOHERENT;
+  args->feature_mask = RTC_FEATURE_FLAG_ALL;
+  args->context = NULL;
+  args->filter = NULL;
+  args->intersect = NULL;
+  args->startNodePtr = ptr;
+  args->num = i;
 #if RTC_MIN_WIDTH
   args->minWidthDistanceFactor = 0.0f;
 #endif
@@ -73,6 +92,7 @@ RTC_FORCEINLINE void rtcInitOccludedArguments(struct RTCOccludedArguments* args)
   args->context = NULL;
   args->filter = NULL;
   args->occluded = NULL;
+
 
 #if RTC_MIN_WIDTH
   args->minWidthDistanceFactor = 0.0f;

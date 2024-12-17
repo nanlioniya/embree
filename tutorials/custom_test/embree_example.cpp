@@ -4,7 +4,6 @@
 
 // Copyright 2009-2021 Intel Corporation
 // SPDX-License-Identifier: Apache-2.0
-
 #include "../../include/embree4/rtcore.h"
 #include <limits>
 #include <iostream>
@@ -18,11 +17,11 @@ void errorFunction(void* userPtr, RTCError error, const char* str)
 int main()
 {
     // 創建device時設置verbose=2來開啟詳細輸出
-    RTCDevice device = rtcNewDevice("verbose=2,threads=1");
-    
+    // RTCDevice device = rtcNewDevice("verbose=2,threads=1");
+    RTCDevice device = rtcNewDevice("tri_accel=bvh4.triangle4v");
     // 設置錯誤回調函數
     rtcSetDeviceErrorFunction(device, errorFunction, nullptr);
-
+    
     // 其餘代碼保持不變
     RTCScene scene = rtcNewScene(device);
     RTCGeometry geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
@@ -56,9 +55,12 @@ int main()
     rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;
     rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
 
+
+
     RTCIntersectArguments args;
     rtcInitIntersectArguments(&args);
     
+    // start intersection
     std::cout << "Starting ray intersection test..." << std::endl;
     rtcIntersect1(scene, &rayhit, &args);
 
@@ -72,6 +74,5 @@ int main()
 
     rtcReleaseScene(scene);
     rtcReleaseDevice(device);
-    
     return 0;
 }

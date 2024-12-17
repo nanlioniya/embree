@@ -16,7 +16,7 @@ namespace embree
   public:
 
     __forceinline RayQueryContext(Scene* scene, RTCRayQueryContext* user_context, RTCIntersectArguments* args)
-      : scene(scene), user(user_context), args(args) {}
+      : scene(scene), user(user_context), args(args), startNodePtr(args->startNodePtr) {}
 
     __forceinline RayQueryContext(Scene* scene, RTCRayQueryContext* user_context, RTCOccludedArguments* args)
       : scene(scene), user(user_context), args((RTCIntersectArguments*)args) {}
@@ -59,6 +59,7 @@ namespace embree
     Scene* scene = nullptr;
     RTCRayQueryContext* user = nullptr;
     RTCIntersectArguments* args = nullptr;
+    size_t startNodePtr = 0;
   };
 
   template<int M, typename Geometry>
