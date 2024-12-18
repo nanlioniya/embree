@@ -559,7 +559,7 @@ RTC_NAMESPACE_BEGIN;
       user_context = &defaultContext;
     }
     RayQueryContext context(scene,user_context,args);
-    
+    std::cout << "[rtcore.cpp] rayhit.ray.tfar: " << rayhit->ray.tfar << "\n"; 
     scene->intersectors.intersect(*rayhit,&context);
 #if defined(DEBUG)
     ((RayHit*)rayhit)->verifyHit();

@@ -8,7 +8,6 @@
 #include <limits>
 #include <iostream>
 
-// 添加錯誤回調函數以捕獲Embree訊息
 void errorFunction(void* userPtr, RTCError error, const char* str)
 {
     std::cout << "Embree Error [" << error << "]: " << str << std::endl;
@@ -16,13 +15,12 @@ void errorFunction(void* userPtr, RTCError error, const char* str)
 
 int main()
 {
-    // 創建device時設置verbose=2來開啟詳細輸出
+    // set verbose=2 for explicit output
     // RTCDevice device = rtcNewDevice("verbose=2,threads=1");
     RTCDevice device = rtcNewDevice("tri_accel=bvh4.triangle4v");
-    // 設置錯誤回調函數
+
     rtcSetDeviceErrorFunction(device, errorFunction, nullptr);
     
-    // 其餘代碼保持不變
     RTCScene scene = rtcNewScene(device);
     RTCGeometry geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 

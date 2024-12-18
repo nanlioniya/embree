@@ -176,7 +176,6 @@ namespace embree
   // }
   void print_bvh4_triangle4v(BVH4::NodeRef node, size_t depth)
   {
-      // 印出節點的位址和類型
       for (size_t k=0; k<depth; k++) std::cout << "  ";
       std::cout << "Node @" << node.ptr << " (";
       std::cout << (node.isAABBNode() ? "AABBNode" : "Leaf") << ") {" << std::endl;
@@ -185,22 +184,19 @@ namespace embree
       {
           BVH4::AABBNode* n = node.getAABBNode();
           
-          // 印出節點詳細資訊
           for (size_t k=0; k<depth; k++) std::cout << "  ";
           std::cout << "  NodeType: Internal" << std::endl;
           
-          // 印出所有邊界盒
           for (size_t i=0; i<4; i++)
           {
               for (size_t k=0; k<depth; k++) std::cout << "  ";
               std::cout << "  bounds" << i << " = " << n->bounds(i);
-              // 加入邊界盒的體積資訊
+
               BBox3fa bounds = n->bounds(i);
               Vec3fa size = bounds.size();
               std::cout << " (size = " << size << ")" << std::endl;
           }
 
-          // 遞迴印出子節點
           for (size_t i=0; i<4; i++)
           {
               if (n->child(i) == BVH4::emptyNode) {
@@ -219,13 +215,11 @@ namespace embree
           size_t num;
           const Triangle4v* tri = (const Triangle4v*) node.leaf(num);
           
-          // 印出葉節點詳細資訊
           for (size_t k=0; k<depth; k++) std::cout << "  ";
           std::cout << "  NodeType: Leaf" << std::endl;
           for (size_t k=0; k<depth; k++) std::cout << "  ";
           std::cout << "  TriangleCount: " << num << std::endl;
 
-          // 印出每個三角形
           for (size_t i=0; i<num; i++) {
               for (size_t j=0; j<tri[i].size(); j++) {
                   for (size_t k=0; k<depth; k++) std::cout << "  ";
@@ -268,7 +262,8 @@ namespace embree
       throw std::runtime_error("cannot access BVH4 acceleration structure"); // will not happen if you use this Embree version
       
     /* now lets print the entire hierarchy */
-    print_bvh4_triangle4v(bvh4->root.getAABBNode()->child(0).ptr,0);
+    // print_bvh4_triangle4v(bvh4->root.getAABBNode()->child(0).ptr,0);
+    print_bvh4_triangle4v(bvh4->root,0);
   }
 
   /* main function in embree namespace */

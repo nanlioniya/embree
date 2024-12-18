@@ -44,6 +44,7 @@ namespace embree
   void AccelN::intersect (Accel::Intersectors* This_in, RTCRayHit& ray, RayQueryContext* context) 
   {
     AccelN* This = (AccelN*)This_in->ptr;
+    std::cout << "[acceln.cpp] rayhit.ray.tfar: " << ray.ray.tfar << "\n"; 
     for (size_t i=0; i<This->accels.size(); i++)
       if (!This->accels[i]->isEmpty())
         This->accels[i]->intersectors.intersect(ray,context);

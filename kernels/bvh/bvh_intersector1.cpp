@@ -34,7 +34,9 @@ namespace embree
                                                                               RayQueryContext* __restrict__ context)
     {
       const BVH* __restrict__ bvh = (const BVH*)This->ptr;
-      std::cout << "entered! root ptr: " << context->startNodePtr << "\n";
+      std::cout << "entered!\n";
+      
+      std::cout << "ray ID: " << ray.id << "\n";
       /* we may traverse an empty BVH in case all geometry was invalid */
       if (bvh->root == BVH::emptyNode)
         return;
@@ -46,7 +48,14 @@ namespace embree
       StackItemT<NodeRef> stack[stackSize];    // stack of nodes
       StackItemT<NodeRef>* stackPtr = stack+1; // current stack pointer
       StackItemT<NodeRef>* stackEnd = stack+stackSize;
-      stack[0].ptr  = bvh->root;
+      if(context->startNodePtr == 0){
+        stack[0].ptr = bvh->root;
+      }
+      else{
+        stack[0].ptr = context->startNodePtr;
+      }
+      // stack[0].ptr  = bvh->root;
+      // stack[0].ptr  = context->startNodePtr;
       stack[0].dist = neg_inf;
       
       if (bvh->root == BVH::emptyNode)
@@ -56,6 +65,7 @@ namespace embree
 #if defined(EMBREE_IGNORE_INVALID_RAYS)
       if (!ray.valid()) return;
 #endif
+      std::cout << "[bvh_intersector1.cpp] rayhit.ray.tfar: " << ray.tfar << "\n"; 
       /* verify correct input */
       assert(ray.valid());
       assert(ray.tnear() >= 0.0f);
@@ -66,9 +76,8 @@ namespace embree
 
       /* initialize the node traverser */
       BVHNNodeTraverser1Hit<N, types> nodeTraverser;
+      
 
-
-      int level = 0;
       /* pop loop */
       while (true) pop:
       {
@@ -76,20 +85,22 @@ namespace embree
         if (unlikely(stackPtr == stack)) break;
         stackPtr--;
         NodeRef cur = NodeRef(stackPtr->ptr);
-        
-        
-        level--;
-        std::cout << "\nPOP Node [Level " << level << "] ";
+        std::cout << "current node: " << cur << "\n";
         std::cout << "Ptr: " << cur.ptr << " ";
         if (cur.isAABBNode())
-            std::cout << "Type: AABB Node";
+            std::cout << "Type: AABB Node\n";
         else if (cur.isLeaf())
-            std::cout << "Type: Leaf Node";
+            std::cout << "Type: Leaf Node" << "\n";
 
-        
+        std::cout << "[bvh_intersector1.cpp] rayhit.ray.tfar: " << ray.tfar << "\n";         
         /* if popped node is too far, pop next one */
         if (unlikely(*(float*)&stackPtr->dist > ray.tfar))
+        {
+          std::cout << "dist: " << *(float*)&stackPtr->dist << "\n";
+          std::cout << "ray.tfar: " << ray.tfar << "\n";
           continue;
+        }
+          
 
         /* downtraversal loop */
         while (true)
@@ -97,9 +108,21 @@ namespace embree
           /* intersect node */
           size_t mask; vfloat<N> tNear;
           STAT3(normal.trav_nodes,1,1,1);
+
+          std::cout << "-current node: " << cur << "\n";
+          std::cout << "Ptr: " << cur.ptr << " ";
+          if (cur.isAABBNode())
+            std::cout << "Type: AABB Node\n";
+          else if (cur.isLeaf())
+            std::cout << "Type: Leaf Node" << "\n";
+
+
+          // nodeIntersected return value used to evaluate whether cur node is leaf
+          // if true, break, and run the following block
+          // if false, keep downtraversal loop
           bool nodeIntersected = BVHNNodeIntersector1<N, types, robust>::intersect(cur, tray, ray.time(), tNear, mask);          
           if (unlikely(!nodeIntersected)) { STAT3(normal.trav_nodes,-1,-1,-1); break; }
-
+          std::cout << mask << "\n";
           /* if no child is hit, pop next node */
           if (unlikely(mask == 0))
             goto pop;
@@ -110,6 +133,14 @@ namespace embree
 
         /* this is a leaf node */
         assert(cur != BVH::emptyNode);
+        
+        std::cout << "--current node: " << cur << "\n";
+        std::cout << "Ptr: " << cur.ptr << " ";
+        if (cur.isAABBNode())
+          std::cout << "Type: AABB Node\n";
+        else if (cur.isLeaf())
+          std::cout << "Type: Leaf Node" << "\n";
+        
         STAT3(normal.trav_leaves,1,1,1);
         size_t num; Primitive* prim = (Primitive*)cur.leaf(num);
         size_t lazy_node = 0;
